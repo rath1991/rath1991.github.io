@@ -1,0 +1,32 @@
+---
+layout: default
+---
+
+<div class="page">
+
+  <div class="hero">
+    <p class="hero-label">Research Journal</p>
+    <h1>Most people stop after building GPT from scratch.<br>This is what happens when you don't.</h1>
+    <p class="hero-sub">
+      Building a language model from scratch is a milestone — but finishing the tutorial is not the same as understanding the model.
+      This journal is about what comes after: actually running experiments, reading the training curves, and learning to speak the language of LLMs.
+      The goal is to go as deep as possible — from pretraining to SFT to RLVR — and share every observation along the way.
+    </p>
+  </div>
+
+  <p class="section-label">Experiments</p>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+    <li>
+      <div class="post-meta">
+        <span class="post-tag">{{ post.tag | default: "Experiment" }}</span>
+        <span>{{ post.date | date: "%B %-d, %Y" }}</span>
+      </div>
+      <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+      {% if post.description %}<p class="post-excerpt">{{ post.description }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+
+</div>

@@ -1,0 +1,371 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+:root {
+  --bg:        #FAFAF8;
+  --surface:   #F2F1EE;
+  --border:    #E5E4E0;
+  --text:      #1A1A1A;
+  --muted:     #6B6B6B;
+  --accent:    #1A56A4;
+  --accent-hl: #EBF2FF;
+  --tag-bg:    #EEEDF0;
+  --max-w:     700px;
+  --font-body: 'Lora', Georgia, serif;
+  --font-ui:   'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+html { font-size: 18px; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* ── Nav ─────────────────────────────────────────────────────────────────── */
+nav {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.nav-brand:hover { text-decoration: none; color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.nav-links a:hover { color: var(--text); text-decoration: none; }
+
+/* ── Page wrapper ────────────────────────────────────────────────────────── */
+.page {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+/* ── Hero (index only) ───────────────────────────────────────────────────── */
+.hero {
+  padding: 3.5rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3rem;
+}
+
+.hero-label {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.hero h1 {
+  font-family: var(--font-ui);
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 600px;
+}
+
+/* ── Post list ───────────────────────────────────────────────────────────── */
+.section-label {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.post-list { list-style: none; }
+
+.post-list li {
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 0;
+}
+.post-list li:first-child { border-top: 1px solid var(--border); }
+
+.post-list .post-meta {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.post-list .post-tag {
+  background: var(--tag-bg);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.post-list h2 {
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 0.4rem;
+}
+
+.post-list h2 a { color: var(--text); }
+.post-list h2 a:hover { color: var(--accent); text-decoration: none; }
+
+.post-list .post-excerpt {
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ── Post page ───────────────────────────────────────────────────────────── */
+.post-header {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2.5rem;
+}
+
+.post-header .post-meta {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.post-tag {
+  background: var(--tag-bg);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+}
+
+.post-header h1 {
+  font-family: var(--font-ui);
+  font-size: 1.85rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.85rem;
+}
+
+.post-header .post-desc {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ── Post body ───────────────────────────────────────────────────────────── */
+.post-body h2 {
+  font-family: var(--font-ui);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 2.5rem 0 0.75rem;
+  letter-spacing: -0.015em;
+}
+
+.post-body h3 {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 2rem 0 0.5rem;
+}
+
+.post-body p { margin-bottom: 1.25rem; }
+
+.post-body ul, .post-body ol {
+  margin: 0 0 1.25rem 1.25rem;
+}
+.post-body li { margin-bottom: 0.3rem; }
+
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  margin: 1.5rem 0;
+}
+.post-body th {
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.post-body td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.post-body tr:last-child td { border-bottom: none; }
+
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: var(--surface);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  color: var(--text);
+}
+
+.post-body pre {
+  background: #1E1E2E;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.post-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.82rem;
+  color: #CDD6F4;
+  line-height: 1.6;
+}
+
+.post-body blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.75rem 1.25rem;
+  margin: 1.5rem 0;
+  background: var(--accent-hl);
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.post-body img {
+  border-radius: 8px;
+  margin: 2rem auto;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.post-body .img-caption {
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: -1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ── About page ──────────────────────────────────────────────────────────── */
+.about-header {
+  padding: 2.5rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2.5rem;
+}
+
+.about-header h1 {
+  font-family: var(--font-ui);
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.5rem;
+}
+
+.about-header .role {
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.about-body p { margin-bottom: 1.25rem; }
+
+.about-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.about-links a {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  transition: border-color 0.15s, color 0.15s;
+}
+.about-links a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  html { font-size: 16px; }
+  .hero h1 { font-size: 1.65rem; }
+  .post-header h1 { font-size: 1.4rem; }
+}

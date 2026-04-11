@@ -1,0 +1,22 @@
+title: "The Black Box Lab"
+tagline: "LLM experiments from someone who didn't stop at the tutorial."
+description: "A research journal on pretraining, stability analysis, and RL fine-tuning of Small Language Models — by Subham Rath."
+url: "https://rath1991.github.io"
+author:
+  name: Subham Rath
+  email: ""
+  linkedin: "https://www.linkedin.com/in/subham-rath/"
+  github: "https://github.com/rath1991"
+
+permalink: /:year/:month/:day/:title/
+markdown: kramdown
+highlighter: rouge
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
