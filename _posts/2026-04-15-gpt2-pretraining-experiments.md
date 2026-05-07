@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "GPT-2 Small from Scratch: Three Pretraining Experiments"
-description: "Baseline, then optimizer × warmup, then init × depth. What the training curves actually say."
+title: "GPT-2 Small from Scratch: Four Pretraining Experiments"
+description: "Baseline, optimizer × warmup, init × depth, normalization × LR. What the training curves actually say."
 tag: "Pretraining · Phase 1"
 date: 2026-04-15
 ---
 
-Three experiments, one model, one question: what does stability actually look like in a small language model, and what breaks it?
+Four experiments, one model, one question: what does stability actually look like in a small language model, and what breaks it?
 
 The setup is GPT-2 Small — 12 layers, 12 heads, 768-dimensional embeddings, 85.7M parameters after weight tying. Trained on FineWeb-Edu, a filtered educational subset of Common Crawl. Each run tracks 8 signals simultaneously: loss, learning rate, gradient norm, parameter norm, update-to-weight ratio, and activation statistics at the final layer. That's the vocabulary for everything below.
 
@@ -91,12 +91,58 @@ The explanation is that flat init forces layers to compete. Early noisy residual
 
 ---
 
+## Exp 04 — Normalization × Learning Rate
+
+Exp 03 ended with a prediction: Post-LN would be more sensitive to LR because the LayerNorm Jacobian `J_LN` sits across the full residual gradient path rather than only the sublayer branch. Exp 04 tests that directly. Six variants: Pre-LN and Post-LN each crossed with three learning rates. 1000 steps each, scaled init and AdamW with warmup=50 unchanged.
+
+| Variant | `norm_position` | `max_lr` | `min_lr` |
+|---------|-----------------|----------|----------|
+| A | `"pre"` | `3e-4` | `3e-5` |
+| B | `"pre"` | `6e-4` | `6e-5` |
+| C | `"pre"` | `1e-3` | `1e-4` |
+| D | `"post"` | `3e-4` | `3e-5` |
+| E | `"post"` | `6e-4` | `6e-5` |
+| F | `"post"` | `1e-3` | `1e-4` |
+
+![Exp 04 — normalization × learning rate](/assets/img/exp04_overview.png)
+<p class="img-caption">6 variants, Pre-LN solid, Post-LN dashed. The LR sensitivity reversal is the main result.</p>
+
+**Pre-LN converged faster and lower at every LR.** Best Pre-LN (C, 1e-3) reached val loss 4.35. Best Post-LN (D, 3e-4) reached 5.85 — a gap of ~1.5 nats after 1000 steps.
+
+**The LR sensitivity reversed between the two norm variants.** In Pre-LN, higher LR produced better final loss: C > B > A. The model was not destabilised at 1e-3 — the clean gradient path kept training healthy. In Post-LN the pattern flipped: lower LR produced better final loss. D (3e-4) was the only variant that learned meaningfully. E (6e-4) and F (1e-3) essentially stalled after step 100, oscillating around 7.5–7.6 for the remaining 900 steps. That's not slow convergence — it's a training failure.
+
+The reversal is the sharpest result in this experiment. LR tolerance is not a function of model size or dataset alone — it's directly determined by where normalization sits relative to the residual connection.
+
+**The mechanism is in the gradient structure.** In Pre-LN (`x' = x + F(LN(x))`), the residual identity path bypasses LayerNorm entirely:
+
+```
+∂L/∂x = ∂L/∂x' · (I + J_F · J_LN)
+```
+
+The `I` term means the upstream gradient passes through unchanged regardless of `J_LN`. In Post-LN (`x' = LN(x + F(x))`), LayerNorm sits after the residual add — there is no bypass:
+
+```
+∂L/∂x = ∂L/∂x' · J_LN(h) · (I + J_F)
+```
+
+`J_LN` gates everything. At the start of training, activations have high variance and `J_LN` scales gradients unpredictably — suppressing some components, amplifying others, zeroing out the mean and variance directions entirely. Across 12 stacked blocks this compounds multiplicatively. High LR amplifies the instability: at 1e-3 Post-LN fails immediately; at 3e-4 it survives but converges slowly.
+
+**Gradient norm** was much more erratic in Post-LN throughout training. Early spikes were sharper and more sustained — `J_LN` gating in the residual path produces unstable gradient scaling in the first ~100 steps that Pre-LN avoids entirely.
+
+**Parameter norm** was consistently larger in Pre-LN. Post-LN normalizes the residual stream at every block output, implicitly constraining activation magnitudes — downstream weights don't need to grow large to handle large activations because the block output is always re-normalised before being passed on. In Pre-LN the residual stream accumulates freely across all 12 blocks and weights adapt by growing. This is not pathological; it reflects that Pre-LN weights are doing more work in absolute terms because the residual stream is richer.
+
+**Residual stream depth profile** at step 900 shows the contrast cleanly. Pre-LN: mean near zero across all layers, std increasing steadily with depth as each block adds coherent signal. Post-LN E and F: irregular oscillating profiles — the normalised block outputs are incoherent, the network is not building structured representations across depth.
+
+**Takeaway:** Pre-LN is unambiguously better across all tested LRs. The mechanism is precise: the residual identity bypass in Pre-LN allows higher LRs without instability, while Post-LN's `J_LN` gating makes it LR-sensitive and prone to early training stalls. Pre-LN remains the baseline for all remaining Phase 1 experiments.
+
+---
+
 ## What connects them
 
-These three experiments test fundamentally different things — duration, optimizer choice, initialization — but they keep pointing at the same underlying structure: **the residual stream is the thing to watch**.
+These four experiments test fundamentally different things — duration, optimizer choice, initialization, normalization placement — but they keep pointing at the same underlying structure: **the residual stream is the thing to watch**.
 
-Warmup matters because cold `v_t` produces step sizes that hammer the residual stream before it has any structure. AdamW/no-warmup drift appears specifically at `ln_final` because unchecked weight asymmetry accumulates across 12 residual additions. Flat init's failure is that it lets each block add uncontrolled variance to the stream, making depth counterproductive.
+Warmup matters because cold `v_t` produces step sizes that hammer the residual stream before it has any structure. AdamW/no-warmup drift appears specifically at `ln_final` because unchecked weight asymmetry accumulates across 12 residual additions. Flat init's failure is that it lets each block add uncontrolled variance to the stream, making depth counterproductive. Post-LN's fragility is that `J_LN` gates the residual gradient path, making the entire system sensitive to anything that inflates activation variance — high LR, flat init, no warmup — and any such perturbation compounds across all 12 blocks.
 
-Every signal in the training curves — gradient norm, activation std, param norm drift — is a different way of observing the same underlying quantity: whether the residual stream is in a regime where each layer can add structured, coherent signal, or whether it's fighting itself.
+Every signal in the training curves — gradient norm, activation std, parameter norm drift, residual depth profile — is a different way of observing the same underlying quantity: whether the residual stream is in a regime where each layer can add structured, coherent signal, or whether it's fighting itself.
 
-That framing is what Exp 04 tests directly. Pre-LN vs Post-LN changes where normalization sits relative to the residual addition — which means it changes how the stream variance behaves. The expectation, given what these three experiments show, is that Post-LN will be more fragile, and the fragility will interact with both warmup and init in predictable ways.
+The practical result of all four: **scaled init, AdamW with warmup, Pre-LN, LR around 1e-3** — that's what a stable small transformer pretraining run looks like. Every deviation from that cluster produces a readable signature in the curves.
