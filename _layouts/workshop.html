@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+  <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      <ul class="nav-links">
+        <li><a href="{{ '/' | relative_url }}">Journal</a></li>
+        <li><a href="{{ '/workshop/' | relative_url }}" style="color: var(--accent);">Workshop</a></li>
+        <li><a href="{{ '/about' | relative_url }}">About</a></li>
+        <li><a href="{{ site.author.github }}" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="workshop-shell">
+
+    <aside class="workshop-toc">
+      <p class="workshop-toc-label">Workshop</p>
+      <ul>
+        <li><a href="{{ '/workshop/' | relative_url }}"{% if page.url == '/workshop/' %} class="active"{% endif %}>Overview</a></li>
+        <li><a href="{{ '/workshop/setup/' | relative_url }}"{% if page.url == '/workshop/setup/' %} class="active"{% endif %}>Setup</a></li>
+        <li><a href="{{ '/workshop/concepts/' | relative_url }}"{% if page.url == '/workshop/concepts/' %} class="active"{% endif %}>Concepts</a></li>
+        <li><a href="{{ '/workshop/flow/' | relative_url }}"{% if page.url == '/workshop/flow/' %} class="active"{% endif %}>Connecting the Dots</a></li>
+        <li><a href="{{ '/workshop/project-sprint-planning/' | relative_url }}"{% if page.url == '/workshop/project-sprint-planning/' %} class="active"{% endif %}>Project: Sprint Planning</a></li>
+        <li><a href="{{ '/workshop/project-eda-analyser/' | relative_url }}"{% if page.url == '/workshop/project-eda-analyser/' %} class="active"{% endif %}>Project: EDA Analyser</a></li>
+        <li class="toc-divider"><span>Reference</span></li>
+        <li><a href="{{ '/workshop/reference/' | relative_url }}"{% if page.url == '/workshop/reference/' %} class="active"{% endif %}>Best Practices Doc</a></li>
+      </ul>
+    </aside>
+
+    <main class="workshop-main">
+
+      {{ content }}
+
+      <div class="workshop-nav">
+        {% if page.url == '/workshop/' %}
+          <span></span>
+          <a href="{{ '/workshop/setup/' | relative_url }}">Setup →</a>
+        {% elsif page.url == '/workshop/setup/' %}
+          <a href="{{ '/workshop/' | relative_url }}">← Overview</a>
+          <a href="{{ '/workshop/concepts/' | relative_url }}">Concepts →</a>
+        {% elsif page.url == '/workshop/concepts/' %}
+          <a href="{{ '/workshop/setup/' | relative_url }}">← Setup</a>
+          <a href="{{ '/workshop/flow/' | relative_url }}">Connecting the Dots →</a>
+        {% elsif page.url == '/workshop/flow/' %}
+          <a href="{{ '/workshop/concepts/' | relative_url }}">← Concepts</a>
+          <a href="{{ '/workshop/project-sprint-planning/' | relative_url }}">Project: Sprint Planning →</a>
+        {% elsif page.url == '/workshop/project-sprint-planning/' %}
+          <a href="{{ '/workshop/flow/' | relative_url }}">← Connecting the Dots</a>
+          <a href="{{ '/workshop/project-eda-analyser/' | relative_url }}">Project: EDA Analyser →</a>
+        {% elsif page.url == '/workshop/project-eda-analyser/' %}
+          <a href="{{ '/workshop/project-sprint-planning/' | relative_url }}">← Project: Sprint Planning</a>
+          <a href="{{ '/workshop/reference/' | relative_url }}">Reference →</a>
+        {% elsif page.url == '/workshop/reference/' %}
+          <a href="{{ '/workshop/project-eda-analyser/' | relative_url }}">← Project: EDA Analyser</a>
+          <span></span>
+        {% endif %}
+      </div>
+
+    </main>
+  </div>
+
+  <footer>
+    <p>Subham Rath · <a href="{{ site.author.linkedin }}" target="_blank">LinkedIn</a> · <a href="{{ site.author.github }}" target="_blank">GitHub</a></p>
+  </footer>
+
+  <script>
+    // Promote kramdown mermaid code blocks to mermaid divs before init
+    document.querySelectorAll('pre > code.language-mermaid').forEach(function(el) {
+      var pre = el.parentNode;
+      var div = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = el.textContent;
+      pre.parentNode.replaceChild(div, pre);
+    });
+  </script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, system-ui, sans-serif',
+        primaryColor: '#EBF2FF',
+        primaryBorderColor: '#1A56A4',
+        primaryTextColor: '#1A1A1A',
+        lineColor: '#6B6B6B',
+        secondaryColor: '#F2F1EE',
+        tertiaryColor: '#EEEDF0',
+        background: '#FAFAF8',
+        nodeBorder: '#1A56A4',
+        clusterBkg: '#F2F1EE',
+        titleColor: '#1A1A1A',
+        edgeLabelBackground: '#FAFAF8'
+      }
+    });
+  </script>
+
+</body>
+</html>
