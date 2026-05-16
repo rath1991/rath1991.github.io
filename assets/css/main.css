@@ -511,14 +511,14 @@ footer {
   color: var(--text);
 }
 
-.workshop-main pre {
+.workshop-main pre:not(.ascii-diagram) {
   background: #1E1E2E;
   border-radius: 8px;
   padding: 1.25rem 1.5rem;
   overflow-x: auto;
   margin: 1.5rem 0;
 }
-.workshop-main pre code {
+.workshop-main pre:not(.ascii-diagram) code {
   background: none;
   padding: 0;
   font-size: 0.82rem;

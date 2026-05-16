@@ -76,13 +76,25 @@
   </footer>
 
   <script>
-    // Promote kramdown mermaid code blocks to mermaid divs before init
+    // Promote mermaid code blocks to mermaid divs before init.
+    // Handles two output formats from kramdown + rouge:
+    // 1. Plain: <pre><code class="language-mermaid">
+    // 2. Rouge-wrapped: <div class="language-mermaid highlighter-rouge">...<code>
+
     document.querySelectorAll('pre > code.language-mermaid').forEach(function(el) {
-      var pre = el.parentNode;
       var div = document.createElement('div');
       div.className = 'mermaid';
       div.textContent = el.textContent;
-      pre.parentNode.replaceChild(div, pre);
+      el.parentNode.parentNode.replaceChild(div, el.parentNode);
+    });
+
+    document.querySelectorAll('.language-mermaid').forEach(function(wrapper) {
+      var code = wrapper.querySelector('code');
+      if (!code) return;
+      var div = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = code.textContent;
+      wrapper.parentNode.replaceChild(div, wrapper);
     });
   </script>
   <script type="module">
