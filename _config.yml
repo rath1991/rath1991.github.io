@@ -11,6 +11,8 @@ author:
 permalink: /:year/:month/:day/:title/
 markdown: kramdown
 highlighter: rouge
+future: true
+timezone: Asia/Kolkata
 
 kramdown:
   input: GFM
